@@ -1,0 +1,35 @@
+{
+    "name": "PropertyPhoto",
+    "fields": [
+        {
+            "fieldName": "photoSeq",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "photoThumbUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "photoUrl",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipName": "property",
+            "otherEntityName": "property",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181103104301",
+    "entityTableName": "property_photo",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "leboncoinDetailScrapper",
+    "applications": "*",
+    "microserviceName": "leboncoinDetailScrapper"
+}

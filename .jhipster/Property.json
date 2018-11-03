@@ -1,0 +1,108 @@
+{
+    "name": "Property",
+    "fields": [
+        {
+            "fieldName": "refSource",
+            "fieldType": "Source",
+            "fieldValues": "LEBONCOIN",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "refId",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "transaction",
+            "fieldType": "Transaction",
+            "fieldValues": "SELL,RENT",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "type",
+            "fieldType": "Type",
+            "fieldValues": "HOUSE,FLAT,OFFICE,LAND",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "description",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "text"
+        },
+        {
+            "fieldName": "createdDate",
+            "fieldType": "Instant",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "price",
+            "fieldType": "BigDecimal"
+        },
+        {
+            "fieldName": "roomCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "bedroomCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "livingArea",
+            "fieldType": "BigDecimal"
+        },
+        {
+            "fieldName": "surfaceArea",
+            "fieldType": "BigDecimal"
+        },
+        {
+            "fieldName": "url",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "relationshipName": "city",
+            "otherEntityName": "city",
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "property"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "photo",
+            "otherEntityName": "propertyPhoto",
+            "otherEntityRelationshipName": "property"
+        }
+    ],
+    "changelogDate": "20181103104300",
+    "entityTableName": "property",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "leboncoinDetailScrapper",
+    "applications": "*",
+    "microserviceName": "leboncoinDetailScrapper"
+}
