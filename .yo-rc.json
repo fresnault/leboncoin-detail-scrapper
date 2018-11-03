@@ -3,7 +3,7 @@
     "promptValues": {
       "packageName": "fr.fresnault"
     },
-    "jhipsterVersion": "5.3.1",
+    "jhipsterVersion": "5.6.0",
     "applicationType": "microservice",
     "baseName": "leboncoinDetailScrapper",
     "packageName": "fr.fresnault",
