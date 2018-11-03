@@ -1,0 +1,50 @@
+
+
+entity Property {
+	refSource Source required,
+	refId String required,
+	name String required,
+    transaction Transaction required,
+    type Type required,
+    description TextBlob,
+    createdDate Instant required,
+    price BigDecimal,
+    roomCount Integer,
+    bedroomCount Integer,
+    livingArea BigDecimal,
+    surfaceArea BigDecimal,
+    url String required
+}
+
+enum Source {
+	LEBONCOIN
+}
+
+enum Transaction {
+    SELL, RENT
+}
+
+enum Type {
+    HOUSE, FLAT, OFFICE, LAND
+}
+
+entity PropertyPhoto {
+	photoSeq Integer,
+    photoThumbUrl String,
+    photoUrl String
+}
+
+entity City {
+	name String required,
+    zipCode String required,
+}
+
+relationship OneToOne {
+	Property{city} to City
+}
+
+relationship OneToMany {
+    Property{photo} to PropertyPhoto
+}
+
+
