@@ -1,14 +1,12 @@
 version: '2'
 services:
     leboncoindetailscrapper-app:
-        image: leboncoindetailscrapper
+        image: fresnault/leboncoindetailscrapper
         environment:
             - _JAVA_OPTIONS=-Xmx512m -Xms256m
             - SPRING_PROFILES_ACTIVE=prod,swagger
-            - SPRING_DATA_MONGODB_URI=mongodb://leboncoindetailscrapper-mongodb:27017
+            - SPRING_DATA_MONGODB_URI=mongodb://host.docker.internal:27017
             - SPRING_DATA_MONGODB_DATABASE=leboncoinDetailScrapper
+            - SPRING_RABBITMQ_HOST=host.docker.internal
             - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
-    leboncoindetailscrapper-mongodb:
-        extends:
-            file: mongodb.yml
-            service: leboncoindetailscrapper-mongodb
+

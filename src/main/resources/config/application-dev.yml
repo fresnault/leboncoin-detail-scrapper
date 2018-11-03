@@ -37,6 +37,8 @@ spring:
         mongodb:
             uri: mongodb://localhost:27017
             database: leboncoinDetailScrapper
+    rabbitmq:
+        host: localhost
     mail:
         host: localhost
         port: 25
