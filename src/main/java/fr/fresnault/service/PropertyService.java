@@ -20,27 +20,20 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fr.fresnault.config.ConfigurationRabbitMQ;
 import fr.fresnault.config.LeBonCoinConfig;
 import fr.fresnault.domain.City;
 import fr.fresnault.domain.Property;
 import fr.fresnault.domain.PropertyPhoto;
-import fr.fresnault.domain.enumeration.Source;
 import fr.fresnault.domain.enumeration.Transaction;
 import fr.fresnault.domain.enumeration.Type;
-import fr.fresnault.repository.PropertyRepository;
 
 @Component
-public class LeBonCoinDetailScrapper {
+public class PropertyService {
 
-	private final Logger log = LoggerFactory.getLogger(LeBonCoinDetailScrapper.class);
-
-	private final PropertyRepository propertyRepository;
+	private final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
 	private final LeBonCoinConfig leBonCoinConfig;
 
@@ -51,8 +44,7 @@ public class LeBonCoinDetailScrapper {
 		}
 	};
 
-	public LeBonCoinDetailScrapper(PropertyRepository propertyRepository, LeBonCoinConfig leBonCoinConfig) {
-		this.propertyRepository = propertyRepository;
+	public PropertyService(LeBonCoinConfig leBonCoinConfig) {
 		this.leBonCoinConfig = leBonCoinConfig;
 	}
 
@@ -61,35 +53,11 @@ public class LeBonCoinDetailScrapper {
 		log.info("Receiver started");
 	}
 
-	@Async
-	@RabbitListener(queues = ConfigurationRabbitMQ.QUEUE_NAME)
-	public void receiveMessage(String url) throws IOException, JSONException, ParseException, InterruptedException {
-		log.info("Traitement property '{}'", url);
+	public Property scrapProperty(Property property)
+			throws IOException, JSONException, ParseException, InterruptedException {
+		log.info("Traitement property '{}'", property);
 
-		int beginIndex = url.lastIndexOf('/');
-		int endIndex = url.lastIndexOf('.');
-		String refId = url.substring(beginIndex + 1, endIndex);
-
-		Property property = new Property();
-		property.setRefSource(Source.LEBONCOIN);
-		property.setRefId(refId);
-		property.setUrl(url);
-
-		Boolean connected = false;
-		int nbTry = 0;
-		Connection connexion = Jsoup.connect(property.getUrl());
-
-		while (!connected && nbTry++ < 5) {
-			try {
-				connexion = Jsoup.connect(property.getUrl());
-				connected = true;
-			} catch (Exception e) {
-				log.error("Connect failed, retry " + nbTry + "...");
-				Thread.sleep(1000);
-			}
-		}
-
-		Document document = connexion.headers(leBonCoinConfig.getHeaders()).get();
+		Document document = getDocument(property.getUrl());
 		String json = document.getElementsByTag("script").stream().filter(e -> e.data().startsWith("window.FLUX_STATE"))
 				.findFirst().get().data();
 
@@ -118,7 +86,7 @@ public class LeBonCoinDetailScrapper {
 			property.livingArea(area);
 		}
 
-		propertyRepository.save(property);
+		return property;
 	}
 
 	private String getStringFromJSON(JSONObject json, String key) {
@@ -150,17 +118,19 @@ public class LeBonCoinDetailScrapper {
 	}
 
 	private Type getType(Map<String, String> attributes) {
-		switch (attributes.get("real_estate_type")) {
-		case "1":
-			return Type.HOUSE;
-		case "2":
-			return Type.FLAT;
-		case "3":
-			return Type.LAND;
-		case "4":
-			return Type.PARKING;
-		case "5":
-			return Type.OTHER;
+		if (attributes.containsKey("real_estate_type")) {
+			switch (attributes.get("real_estate_type")) {
+			case "1":
+				return Type.HOUSE;
+			case "2":
+				return Type.FLAT;
+			case "3":
+				return Type.LAND;
+			case "4":
+				return Type.PARKING;
+			case "5":
+				return Type.OTHER;
+			}
 		}
 		return Type.UNKNOWN;
 	}
@@ -248,6 +218,28 @@ public class LeBonCoinDetailScrapper {
 		city.setZipCode(getStringFromJSON(location, "zipcode"));
 
 		return city;
+	}
+
+	private Document getDocument(String url) throws InterruptedException {
+		Boolean connected = false;
+		int nbTry = 1;
+		Connection connexion = null;
+		Document document = null;
+
+		while (!connected && nbTry++ < 15) {
+			try {
+				connexion = Jsoup.connect(url).headers(leBonCoinConfig.getHeaders()).followRedirects(true);
+				document = connexion.get();
+				connected = true;
+			} catch (Exception e) {
+				log.error("Connect failed, retry " + nbTry + "...");
+				Thread.sleep(1000 * nbTry);
+			}
+		}
+		if (document == null) {
+			throw new IllegalStateException("Impossible to connect to " + url);
+		}
+		return document;
 	}
 
 }

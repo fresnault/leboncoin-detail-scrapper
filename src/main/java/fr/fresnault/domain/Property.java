@@ -36,22 +36,18 @@ public class Property implements Serializable {
 	@Field("ref_id")
 	private String refId;
 
-	@NotNull
 	@Field("name")
 	private String name;
 
-	@NotNull
 	@Field("transaction")
 	private Transaction transaction;
 
-	@NotNull
 	@Field("type")
 	private Type type;
 
 	@Field("description")
 	private String description;
 
-	@NotNull
 	@Field("created_date")
 	private Instant createdDate;
 
@@ -319,11 +315,6 @@ public class Property implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Property{" + "id=" + getId() + ", refSource='" + getRefSource() + "'" + ", refId='" + getRefId() + "'"
-				+ ", name='" + getName() + "'" + ", transaction='" + getTransaction() + "'" + ", type='" + getType()
-				+ "'" + ", description='" + getDescription() + "'" + ", createdDate='" + getCreatedDate() + "'"
-				+ ", price=" + getPrice() + ", roomCount=" + getRoomCount() + ", bedroomCount=" + getBedroomCount()
-				+ ", livingArea=" + getLivingArea() + ", surfaceArea=" + getSurfaceArea() + ", url='" + getUrl() + "'"
-				+ "}";
+		return "Property{" + "id=" + getId() + "}";
 	}
 }
